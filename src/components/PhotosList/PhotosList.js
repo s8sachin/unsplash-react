@@ -13,7 +13,7 @@ class Header extends React.Component {
       <div className="photosList">
         {photosList.map(photo => (
           <React.Fragment key={photo.id}>
-            <Card>
+            <Card className="custom-card">
               <CardImg top width="100%" src={photo.urls.small} alt="img" />
               {/* <CardBody>
                 <CardTitle>Card title</CardTitle>

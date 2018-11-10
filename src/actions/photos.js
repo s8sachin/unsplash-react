@@ -8,16 +8,9 @@ export const getPhotosAction = page => (
     getPhotos({ page })
     .then((res) => {
       const { data } = res;
-      // const { tdObjReducer } = getState();
-      const payload = data;
-      // if (tdObjReducer.tdObjects.categories) {
-      //   const { categories } = tdObjReducer.tdObjects;
-      //   const newArr = removeDuplicates(categories.concat(data.categories), '_id');
-      //   const newObj = { categories: newArr };
-      //   Object.assign(payload, newObj);
-      // } else {
-      //   payload = data;
-      // }
+      const { photosReducer } = getState();
+      const { photosList } = photosReducer;
+      const payload = photosList ? [...photosList, ...data] : data;
       dispatch({ type: PHOTOS_LIST, payload });
     })
     .catch(({ response }) => {

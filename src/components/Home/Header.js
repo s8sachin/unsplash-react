@@ -1,21 +1,27 @@
 
 import React from 'react';
 import {
-  NavbarToggler, Navbar, Collapse, Nav, NavItem, Modal,
+  NavbarToggler, Navbar, Collapse, Nav, NavItem, Input, InputGroup, InputGroupAddon, InputGroupText, Button,
 } from 'reactstrap';
 import {
   Link, NavLink, withRouter,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
+import debounce from 'lodash.debounce';
 import unsplashLogo from './unsplash.png';
+import { searchPhotosAction } from '../../actions';
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
-    this.toggleProfile = this.toggleProfile.bind(this);
+    // this.changeSearch = debounce(this.props.searchPhotosAction, 250);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.state = {
-      isOpen: false, profile: false,
+      isOpen: false,
+      searchVal: '',
     };
   }
 
@@ -33,39 +39,59 @@ class Header extends React.Component {
     });
   }
 
-  toggleProfile() {
-    this.setState({
-      profile: !this.state.profile,
+  handleChange(e) {
+    const searchVal = e.target.value;
+
+    this.setState({ searchVal }, () => {
+      // this.changeSearch(searchVal, 1);
     });
   }
 
+  handleClick() {
+    const { searchVal } = this.state;
+    // this.props.searchPhotosAction(searchVal, 1, true);
+    this.props.history.push(`/search?query=${searchVal}`);
+  }
+
+  handleKeyPress(e) {
+    if (e.charCode === 13 || e.which === 13 || e.key === 'Enter') {
+      this.handleClick();
+    }
+  }
+
   render() {
-    const { profile, isOpen } = this.state;
+    const { isOpen, searchVal } = this.state;
     return (
       <div className="header">
         <Navbar color="light" light expand="md">
           <Link to="/" className="navlink"> <img className="footer-logo" src={unsplashLogo} alt="abc" />Unsplash</Link>
-          {/* <React.Fragment>
+          <React.Fragment>
             <NavbarToggler onClick={this.toggle} />
-            <Collapse isOpen={isOpen} navbar>
-              <Nav className="ml-auto align-items-center" navbar>
-                <NavItem className="collapsable-navItems">
-                  <NavLink className="navlink" to="/dashboard">Dashboard</NavLink>
-                </NavItem>
-                <NavItem className="collapsable-navItems">
-                  <button onClick={this.toggleProfile} type="button" className="appBtn cursor-pointer userBtn" color="light"><i className="far fa-user" /></button>
-                </NavItem>
-                <NavItem className="collapsable-navItems">
-                  <button onClick={this.logout} type="button" className="appBtn cursor-pointer" color="light">Logout <i className="fas fa-sign-out-alt" /></button>
+            <Collapse isOpen={isOpen} navbar className="w-50">
+              <Nav className="align-items-center w-100" navbar>
+                <NavItem className="collapsable-navItems w-50">
+                  <InputGroup className="search-input-group">
+                    <Input
+                      placeholder="Search Keywords, #tags !"
+                      className="noStyle search-input"
+                      onChange={this.handleChange}
+                      value={searchVal}
+                      onKeyPress={this.handleKeyPress}
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button color="white" className="search-btn noStyle" onClick={this.handleClick}>
+                        <i className="fa fa-search" />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
                 </NavItem>
               </Nav>
             </Collapse>
-            <Modal isOpen={profile} toggle={this.toggleProfile}><Profile toggle={this.toggleProfile} /></Modal>
-          </React.Fragment> */}
+          </React.Fragment>
         </Navbar>
       </div>
     );
   }
 }
 
-export default withRouter(connect(null, { })(Header));
+export default withRouter(connect(null, { searchPhotosAction })(Header));

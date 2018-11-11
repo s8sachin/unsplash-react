@@ -10,5 +10,5 @@ export const getPhotos = params => axios({
 
 export const getSearchPhotos = params => axios({
   method: 'get',
-  url: `${API_URL}/search/photos/?client_id=${clientId}&page=${params.page}`,
+  url: `${API_URL}/search/photos/?client_id=${clientId}&page=${params.page}&query=${params.searchVal}`,
 });

@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import debounce from 'lodash.debounce';
+import qs from 'qs';
 import unsplashLogo from './unsplash.png';
 import { searchPhotosAction } from '../../actions';
 
@@ -19,17 +20,19 @@ class Header extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    const { query } = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     this.state = {
       isOpen: false,
-      searchVal: '',
+      searchVal: (query || ''),
     };
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     const { collapsed } = this.state;
+    const { query } = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     if (prevProps.location !== location && !collapsed) {
-      this.setState({ isOpen: false });
+      this.setState({ isOpen: false, searchVal: (query || '') });
     }
   }
 
@@ -50,7 +53,9 @@ class Header extends React.Component {
   handleClick() {
     const { searchVal } = this.state;
     // this.props.searchPhotosAction(searchVal, 1, true);
-    this.props.history.push(`/search?query=${searchVal}`);
+    if (searchVal.trim()) {
+      this.props.history.push(`/search?query=${searchVal}`);
+    }
   }
 
   handleKeyPress(e) {
